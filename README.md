@@ -45,3 +45,6 @@ For the evaluation of the thesis, the provider was run as part of a github actio
 ### Run the Provider to test the redeployment 
 
 In order to test the redeployment, use this shell script `redeploy_simulation.sh REQUEST_DELAY`. REQUEST_DELAY specifies how long the script waits after a change occurred to send a request to the web service. Make sure, the machine you run this script on is in the same network as the pis. Ensure that no docker containers are running on the Pis and that the avahi-daemon is running on all pis. Everything else should be handled by the script. The execution times are highly dependent on the specified request delay. 
+
+## Last Remarks
+I hope this clarifies setup and usage of the provider. If you encounter any problems or run into some issues, feel free to reach out to me.
