@@ -28,13 +28,13 @@ WORKDIR /build
 COPY . .
 
 # Build everything, with optimizations
-RUN swift build --package-path ./WebService
+RUN swift build
 
 # Switch to the staging area
 WORKDIR /staging
 
 # Copy main executable to staging area
-RUN cp "$(swift build --package-path /build/WebService --show-bin-path)/Buoy" ./
+RUN cp "$(swift build --show-bin-path)/Buoy" ./
 
 # Copy resources from the resources directory if the directories exist
 # Ensure that by default, neither the directory nor any of its contents are writable.
