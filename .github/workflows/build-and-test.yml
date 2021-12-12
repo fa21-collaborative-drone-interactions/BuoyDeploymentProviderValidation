@@ -11,10 +11,10 @@ name: Build and Test
 on:
   push:
     branches:
-      - trunk
+      - main
   pull_request:
     branches:
-      - trunk
+      - main
   workflow_dispatch:
 
 jobs:
