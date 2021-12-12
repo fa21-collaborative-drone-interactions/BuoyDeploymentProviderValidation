@@ -6,10 +6,13 @@
 # SPDX-License-Identifier: MIT
 #
 
+ARG baseimage=swift:focal
+
 # ================================
 # Build image
 # ================================
-FROM swiftlang/swift@sha256:59fd39504339a0c0b24a304bb50028ff679bf60b45f25f6acd42b0530a1188c6 as build
+# FROM swiftlang/swift@sha256:59fd39504339a0c0b24a304bb50028ff679bf60b45f25f6acd42b0530a1188c6 as build
+FROM ${baseimage} as build
 
 # Install OS updates and, if needed, sqlite3
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
@@ -43,7 +46,8 @@ RUN [ -d "$(swift build --package-path /build/WebService --show-bin-path)/WebSer
 # ================================
 # Run image
 # ================================
-FROM swiftlang/swift@sha256:59fd39504339a0c0b24a304bb50028ff679bf60b45f25f6acd42b0530a1188c6 as run
+# FROM swiftlang/swift@sha256:59fd39504339a0c0b24a304bb50028ff679bf60b45f25f6acd42b0530a1188c6 as run
+FROM ${baseimage} as run
 
 # Make sure all system packages are up to date.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
