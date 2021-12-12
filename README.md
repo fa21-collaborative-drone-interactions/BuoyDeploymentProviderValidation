@@ -1,3 +1,11 @@
+<!--
+# This source file is part of the FA2021 open source project
+#
+# SPDX-FileCopyrightText: 2019-2021 Paul Schmiedmayer and the project authors (see CONTRIBUTORS.md) <paul.schmiedmayer@tum.de>
+#
+# SPDX-License-Identifier: MIT
+-->
+
 # FA Deployment Provider - Evaluation
 
 ## Setup
@@ -14,12 +22,12 @@ For the evaluation, the following sensor setup was used:
 
  1. Boot all pis using [this image](https://github.com/fa21-collaborative-drone-interactions/BuoyAP). This should pre-configure access point, docker, etc.)
  2. Download and start avahi by:
-     I. sudo apt-get install avahi-utils avahi-daemon
-     II. edit /etc/avahi/avahi-daemon.conf
+    1. sudo apt-get install avahi-utils avahi-daemon
+    2. edit /etc/avahi/avahi-daemon.conf
          `publish-hinfo=yes`
          `publish-workstation=yes`
-    III. sudo systemctl enable avahi-daemon.service
-    IV. sudo systemctl start avahi-daemon.service
+    3. sudo systemctl enable avahi-daemon.service
+    4. sudo systemctl start avahi-daemon.service
     Alternatively you can also download and run [this script](https://github.com/Apodini/ApodiniIoTDeploymentProvider/blob/develop/scripts/setup-IoT.sh)
 3. Enable keyless ssh login by running: 
     `ssh-copy-id username@ipaddress`
@@ -32,9 +40,7 @@ For the evaluation, the following sensor setup was used:
     
 ### Run the Provider
 
-Similiar to the Jass deployment provider ([here](https://github.com/fa21-collaborative-drone-interactions/BuoyDeploymentProviderValidation)), it is recommended to pass a credentials file the provider to fully automate the deployment. Reach out to me for access to the file, since it contains sensitive information.
-
-The Buoy Deployment Provider uses a `docker-compose.yml` file for the web service. In order to get this, clone the web service's repository ([here](https://github.com/Apodini/buoy-web-service)) and reference the path to the file in the run arguments of the provider.
+Similiar to the Jass deployment provider ([here](https://github.com/fa21-collaborative-drone-interactions/BuoyDeploymentProviderValidation)), it is recommended to pass a credentials file the provider to fully automate the deployment. The used images are located in public repositories. Thus no credentials need to be provided. The default configuration file `credentials.json` need to referenced when starting the provider, as shown below. 
 
 Run the provider, by using `swift run BuoyDeploymentTarget --docker-compose-path PATH_TO_COMPOSE_YML --config-file PATH_TO_CREDENTIAL_FILE`. The provider dumps the logs automatically in `/Logs`.  
 

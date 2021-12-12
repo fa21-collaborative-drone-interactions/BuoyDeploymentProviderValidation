@@ -1,14 +1,20 @@
+#              
+# This source file is part of the FA2021 open source project
+#
+# SPDX-FileCopyrightText: 2019-2021 Paul Schmiedmayer and the project authors (see CONTRIBUTORS.md) <paul.schmiedmayer@tum.de>
+#
+# SPDX-License-Identifier: MIT
+#
+
 name: Build and Test
 
 on:
   push:
     branches:
-      - develop
-      - release
+      - trunk
   pull_request:
     branches:
-      - develop
-      - release
+      - trunk
   workflow_dispatch:
 
 jobs:
@@ -45,9 +51,3 @@ jobs:
     - name: Release Build # Ensuring release build runs successfully without -enable-testing flag
       if: matrix.configuration == 'release'
       run: swift build -c release
-    - name: Release Build & Test
-      if: matrix.configuration == 'release_testing'
-      run: swift test -c release -Xswiftc -enable-testing -Xswiftc -DRELEASE_TESTING
-    - name: Debug Build & Test
-      if: matrix.configuration == 'debug'
-      run: swift test -c debug

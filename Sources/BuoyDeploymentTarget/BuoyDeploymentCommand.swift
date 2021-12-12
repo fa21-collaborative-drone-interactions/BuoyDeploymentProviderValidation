@@ -33,13 +33,13 @@ struct BuoyDeployCommand: ParsableCommand {
 //    var configFile: String = "/Users/felice/Documents/buoy-deployment-provider/config.json"
     
     @Option(help: "The interval stating how frequent the provider tries to redeploy")
-    public var redeploymentInterval: Int = 30
+    var redeploymentInterval: Int = 30
     
     @Flag(help: "If set, the deployment provider listens for changes in the working directory and automatically redeploys them."
     )
-    public var automaticRedeploy = false
+    var automaticRedeploy = false
     
-    func run() throws { 
+    func run() throws {
         let provider = IoTDeploymentProvider(
             searchableTypes: types.split(separator: ",").map { DeviceIdentifier(String($0)) },
             deploymentDir: deploymentDir,
@@ -59,7 +59,7 @@ struct BuoyDeployCommand: ParsableCommand {
 
     func registerSensorPostDiscovery(_ provider: IoTDeploymentProvider, device: DeploymentDevice, sensorType: Int, actionName: String) {
         provider.registerAction(
-            scope: .all, 
+            scope: .all,
             action: .docker(
                         DockerDiscoveryAction(
                             identifier: ActionIdentifier(actionName),
