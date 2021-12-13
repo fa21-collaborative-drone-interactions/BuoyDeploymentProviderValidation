@@ -16,7 +16,7 @@ For the evaluation, the following sensor setup was used:
  - Pi B: Conductivity sensor, Temperature sensor
  - Pi C: PH sensor.
  
- The web service that was used for the evaluation/deployment is the [BuoyWebService](https://github.com/Apodini/buoy-web-service), which was forked from the original web service [here](https://github.com/fa21-collaborative-drone-interactions/buoy-web-service) in order to add the deployment options. The core functionality was not touched. 
+ The web service that was used for the evaluation/deployment is the [BuoyWebService](https://github.com/Apodini/buoy-web-service), which was forked from the original web service [here](https://github.com/fa21-collaborative-drone-interactions/buoy-web-service) in order to add the deployment options. The core functionality was not touched. The web service is also added as an executable target to this project.
 
 ### General Setup
 
