@@ -34,11 +34,9 @@ struct BuoyDeployCommand: ParsableCommand {
 
     @Option
     var dockerComposePath: String
-//    var dockerComposePath: String = "/Users/felice/Documents/buoy-web-service/docker-compose.yml"
     
     @Option
     var configFile: String
-//    var configFile: String = "/Users/felice/Documents/buoy-deployment-provider/config.json"
     
     @Option(help: "The interval stating how frequent the provider tries to redeploy")
     var redeploymentInterval: Int = 30

@@ -12,7 +12,7 @@ services:
   # An Apodini Buoy Web Service
   buoy-web-service:
     container_name: "buoy-web-service"
-    image: "ghcr.io/fa2021/fa2021-webservice:latest"
+    image: "ghcr.io/fa21-collaborative-drone-interactions/buoy-webservice:latest"
     # Expose port 8080 of container on port 443 of host
     ports:
       - "80:80"
