@@ -34,12 +34,12 @@ RUN swift build -c release
 WORKDIR /staging
 
 # Copy main executable to staging area
-RUN cp "$(swift build --package-path /build -c release --show-bin-path)/Buoy" ./
+RUN cp "$(swift build --package-path /build -c release --show-bin-path)/WebService" ./
 
 # Copy resources from the resources directory if the directories exist
 # Ensure that by default, neither the directory nor any of its contents are writable.
-RUN [ -d "$(swift build --package-path /build/WebService --show-bin-path)/WebService_Buoy.resources" ] \
-    && mv "$(swift build --package-path /build/WebService --show-bin-path)/WebService_Buoy.resources" ./ \
+RUN [ -d "$(swift build --package-path /build --show-bin-path)/WebService.resources" ] \
+    && mv "$(swift build --package-path /build --show-bin-path)/WebService.resources" ./ \
     && chmod -R a-w ./WebService_Buoy.resources \
     || echo No resources to copy
 
@@ -69,4 +69,4 @@ USER buoyuser:buoyuser
 
 # Start the Apodini service when the image is run.
 # The default port is 80. Can be adapted using the `--port` argument
-ENTRYPOINT ["./Buoy"]
+ENTRYPOINT ["./WebService"]
