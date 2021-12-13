@@ -18,7 +18,7 @@ FROM ${baseimage} as build
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && apt-get -q update \
     && apt-get -q dist-upgrade -y \
-    && apt-get install -y libsqlite3-dev \
+    && apt-get install -y libsqlite3-dev libavahi-compat-libdnssd-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up a build area
@@ -28,13 +28,13 @@ WORKDIR /build
 COPY . .
 
 # Build everything, with optimizations
-RUN swift build
+RUN swift build -c release
 
 # Switch to the staging area
 WORKDIR /staging
 
 # Copy main executable to staging area
-RUN cp "$(swift build --show-bin-path)/Buoy" ./
+RUN cp "$(swift build --package-path /build -c release --show-bin-path)/Buoy" ./
 
 # Copy resources from the resources directory if the directories exist
 # Ensure that by default, neither the directory nor any of its contents are writable.
@@ -56,16 +56,16 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && rm -r /var/lib/apt/lists/*
 
 # Create a apodini user and group with /app as its home directory
-RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app apodini
+RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app buoyuser
 
 # Switch to the new home directory
 WORKDIR /app
 
 # Copy built executable and any staged resources from builder
-COPY --from=build --chown=apodini:apodini /staging /app
+COPY --from=build --chown=buoyuser:buoyuser /staging /app
 
 # Ensure all further commands run as the apodini user
-USER apodini:apodini
+USER buoyuser:buoyuser
 
 # Start the Apodini service when the image is run.
 # The default port is 80. Can be adapted using the `--port` argument

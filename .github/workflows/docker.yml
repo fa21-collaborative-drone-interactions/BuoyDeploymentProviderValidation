@@ -54,12 +54,12 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Sources/WebService/Dockerfile
+          file: ./Dockerfile
           build-args: |
             baseimage=${{ steps.baseimage.outputs.value }}
           push: true
           platforms: linux/${{ matrix.architecture }}
-          tags: ghcr.io/fa2021/fa2021-webservice:latest-${{ matrix.architecture }},ghcr.io/fa2021/fa2021-webservice:${{ steps.latesttag.outputs.tag }}-${{ matrix.architecture }}
+          tags: ghcr.io/fa21-collaborative-drone-interactions/fa2021-webservice:latest-${{ matrix.architecture }},ghcr.io/fa21-collaborative-drone-interactions/fa2021-webservice:${{ steps.latesttag.outputs.tag }}-${{ matrix.architecture }}
       - name: Image digest
         run: echo ${{ steps.buildandpush.outputs.digest }}
   dockermanifest:
@@ -82,11 +82,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Create and Push Multi Architecture Image
         run: |
-            docker manifest create ghcr.io/fa2021/fa2021-webservice:latest \
-              --amend ghcr.io/fa2021/fa2021-webservice:latest-amd64 \
-              --amend ghcr.io/fa2021/fa2021-webservice:latest-arm64
-            docker manifest create ghcr.io/fa2021/fa2021-webservice:${{ steps.latesttag.outputs.tag }} \
-              --amend ghcr.io/fa2021/fa2021-webservice:${{ steps.latesttag.outputs.tag }}-amd64 \
-              --amend ghcr.io/fa2021/fa2021-webservice:${{ steps.latesttag.outputs.tag }}-arm64
-            docker manifest push ghcr.io/fa2021/fa2021-webservice:latest
-            docker manifest push ghcr.io/fa2021/fa2021-webservice:${{ steps.latesttag.outputs.tag }}
+            docker manifest create ghcr.io/fa21-collaborative-drone-interactions/fa2021-webservice:latest \
+              --amend ghcr.io/fa21-collaborative-drone-interactions/fa2021-webservice:latest-amd64 \
+              --amend ghcr.io/fa21-collaborative-drone-interactions/fa2021-webservice:latest-arm64
+            docker manifest create ghcr.io/fa21-collaborative-drone-interactions/fa2021-webservice:${{ steps.latesttag.outputs.tag }} \
+              --amend ghcr.io/fa21-collaborative-drone-interactions/fa2021-webservice:${{ steps.latesttag.outputs.tag }}-amd64 \
+              --amend ghcr.io/fa21-collaborative-drone-interactions/fa2021-webservice:${{ steps.latesttag.outputs.tag }}-arm64
+            docker manifest push ghcr.io/fa21-collaborative-drone-interactions/fa2021-webservice:latest
+            docker manifest push ghcr.io/fa21-collaborative-drone-interactions/fa2021-webservice:${{ steps.latesttag.outputs.tag }}
