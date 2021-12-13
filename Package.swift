@@ -59,9 +59,6 @@ let package = Package(
                 .product(name: "ApodiniDeploy", package: "Apodini"),
                 .product(name: "DeploymentTargetIoTRuntime", package: "ApodiniIoTDeploymentProvider"),
                 .target(name: "BuoyDeploymentOption")
-            ],
-            resources: [
-                .copy("Dockerfile")
             ]
         )
     ]
