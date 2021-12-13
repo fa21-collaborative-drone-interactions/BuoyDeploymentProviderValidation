@@ -31,7 +31,6 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Apodini/Apodini.git", .upToNextMinor(from: "0.6.1")),
-        .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.4.0")),
         .package(url: "https://github.com/Apodini/ApodiniIoTDeploymentProvider", .upToNextMinor(from: "0.1.0"))
     ],
     targets: [
@@ -60,6 +59,9 @@ let package = Package(
                 .product(name: "ApodiniDeploy", package: "Apodini"),
                 .product(name: "DeploymentTargetIoTRuntime", package: "ApodiniIoTDeploymentProvider"),
                 .target(name: "BuoyDeploymentOption")
+            ],
+            resources: [
+                .copy("Dockerfile")
             ]
         )
     ]

@@ -22,12 +22,12 @@ For the evaluation, the following sensor setup was used:
 
  1. Boot all pis using [this image](https://github.com/fa21-collaborative-drone-interactions/BuoyAP). This should pre-configure access point, docker, etc.)
  2. Download and start avahi by:
-    1. sudo apt-get install avahi-utils avahi-daemon
-    2. edit /etc/avahi/avahi-daemon.conf
+    1. `sudo apt-get install avahi-utils avahi-daemon`
+    2. `edit /etc/avahi/avahi-daemon.conf`
          `publish-hinfo=yes`
          `publish-workstation=yes`
-    3. sudo systemctl enable avahi-daemon.service
-    4. sudo systemctl start avahi-daemon.service
+    3. `sudo systemctl enable avahi-daemon.service`
+    4. `sudo systemctl start avahi-daemon.service`
     Alternatively you can also download and run [this script](https://github.com/Apodini/ApodiniIoTDeploymentProvider/blob/develop/scripts/setup-IoT.sh)
 3. Enable keyless ssh login by running: 
     `ssh-copy-id username@ipaddress`
@@ -42,7 +42,7 @@ For the evaluation, the following sensor setup was used:
 
 Similiar to the Jass deployment provider ([here](https://github.com/fa21-collaborative-drone-interactions/BuoyDeploymentProviderValidation)), it is recommended to pass a credentials file the provider to fully automate the deployment. The used images are located in public repositories. Thus no credentials need to be provided. The default configuration file `credentials.json` need to referenced when starting the provider, as shown below. 
 
-Run the provider, by using `swift run BuoyDeploymentTarget --docker-compose-path PATH_TO_COMPOSE_YML --config-file PATH_TO_CREDENTIAL_FILE`. The provider dumps the logs automatically in `/Logs`.  
+Run the provider, by using `swift run BuoyDeploymentTarget --docker-compose-path docker-compose.yml --config-file credentials.json`. The provider dumps the logs automatically in `/Logs`.  
 
 ### Run the Provider as part of a github action
 
