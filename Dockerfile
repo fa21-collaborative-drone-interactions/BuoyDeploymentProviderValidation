@@ -6,13 +6,14 @@
 # SPDX-License-Identifier: MIT
 #
 
-ARG baseimage=swift:focal
+# ARG baseimage=swift:focal
 
 # ================================
 # Build image
 # ================================
 # FROM swiftlang/swift@sha256:59fd39504339a0c0b24a304bb50028ff679bf60b45f25f6acd42b0530a1188c6 as build
-FROM ${baseimage} as build
+# FROM ${baseimage} as build
+FROM swiftarm/swift:5.5.1-ubuntu-focal as build
 
 # Install OS updates and, if needed, sqlite3
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
@@ -28,13 +29,13 @@ WORKDIR /build
 COPY . .
 
 # Build everything, with optimizations
-RUN swift build -c release
+RUN swift build -c debug --product WebService
 
 # Switch to the staging area
 WORKDIR /staging
 
 # Copy main executable to staging area
-RUN cp "$(swift build --package-path /build -c release --show-bin-path)/WebService" ./
+RUN cp "$(swift build --package-path /build -c debug --show-bin-path)/WebService" ./
 
 # Copy resources from the resources directory if the directories exist
 # Ensure that by default, neither the directory nor any of its contents are writable.
@@ -47,7 +48,8 @@ RUN [ -d "$(swift build --package-path /build --show-bin-path)/WebService.resour
 # Run image
 # ================================
 # FROM swiftlang/swift@sha256:59fd39504339a0c0b24a304bb50028ff679bf60b45f25f6acd42b0530a1188c6 as run
-FROM ${baseimage} as run
+# FROM ${baseimage} as run
+FROM swiftarm/swift:5.5.1-ubuntu-focal as run
 
 # Make sure all system packages are up to date.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
