@@ -32,7 +32,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push web service docker image
-        id: buildandpush
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -42,7 +41,6 @@ jobs:
           push: true
           tags: ghcr.io/fa21-collaborative-drone-interactions/buoy-webservice:latest-arm64,ghcr.io/fa21-collaborative-drone-interactions/buoy-webservice:${{ steps.latesttag.outputs.tag }}-arm64
       - name: Build and push Buoy Post Discovery Action docker image
-        id: buildandpush
         uses: docker/build-push-action@v2
         with:
           context: BuoyPostDiscoveryAction
@@ -67,7 +65,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push web service docker image
-        id: buildandpush
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -77,7 +74,6 @@ jobs:
           push: true
           tags: ghcr.io/fa21-collaborative-drone-interactions/buoy-webservice:latest-amd64,ghcr.io/fa21-collaborative-drone-interactions/buoy-webservice:${{ steps.latesttag.outputs.tag }}-amd64
       - name: Build and push Buoy Post Discovery Action docker image
-        id: buildandpush
         uses: docker/build-push-action@v2
         with:
           context: BuoyPostDiscoveryAction
