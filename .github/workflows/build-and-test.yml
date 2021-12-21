@@ -1,7 +1,7 @@
-#              
-# This source file is part of the FA2021 open source project
 #
-# SPDX-FileCopyrightText: 2019-2021 Paul Schmiedmayer and the project authors (see CONTRIBUTORS.md) <paul.schmiedmayer@tum.de>
+# This source file is part of the FA 2021 open source project
+#
+# SPDX-FileCopyrightText: 2021 Paul Schmiedmayer and the FA 2021 project authors (see CONTRIBUTORS.md) <paul.schmiedmayer@tum.de>
 #
 # SPDX-License-Identifier: MIT
 #
@@ -38,12 +38,8 @@ jobs:
       run: xcodebuild -version
     - name: Check Swift version
       run: swift --version
-    - name: Release Build # Ensuring release build runs successfully without -enable-testing flag
-      if: matrix.configuration == 'release'
-      run: swift build -c release
-    - name: Debug Build
-      if: matrix.configuration == 'debug'
-      run: swift build -c debug
+    - name: Build ${{ matrix.configuration }}
+      run: swift build -c ${{ matrix.configuration }}
 
   linux:
     name: Linux ${{ matrix.linux }} ${{ matrix.configuration }}
@@ -53,8 +49,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        linux: [bionic, focal, amazonlinux2, centos8]
-        configuration: [debug, release, release_testing]
+        linux: [focal, amazonlinux2, centos8]
+        configuration: [debug, release]
     steps:
     - uses: actions/checkout@v2
     - name: Install libsqlite3, lsof, zsh and libavahi-compat-libdnssd-dev
@@ -75,6 +71,5 @@ jobs:
         key: ${{ runner.os }}-${{matrix.linux}}-${{matrix.configuration}}-spm2-${{ hashFiles('Package.resolved') }}
     - name: Check Swift version
       run: swift --version
-    - name: Release Build # Ensuring release build runs successfully without -enable-testing flag
-      if: matrix.configuration == 'release'
-      run: swift build -c release
+    - name: Build ${{ matrix.configuration }}
+      run: swift build -c ${{ matrix.configuration }}

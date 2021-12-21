@@ -6,51 +6,87 @@
 # SPDX-License-Identifier: MIT
 -->
 
-# FA Deployment Provider - Evaluation
+# FA 2021 Deployment Provider Validation
+
+[![Build and Test](https://github.com/fa21-collaborative-drone-interactions/BuoyDeploymentProviderValidation/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/fa21-collaborative-drone-interactions/BuoyDeploymentProviderValidation/actions/workflows/build-and-test.yml)
+
+This repository contains the setup and evaluation scripts for the automatic web service deployment using the Apodini IoT Deployment Provider that was used for the FA 2021 project.
 
 ## Setup
-The evaluation has been conducted with a total of **3** Raspberry Pis (A, B, C), to which are different sensors connected. The different sensors are PH, conductivity and temperature. For simplicity reason, the connection of the sensors is only simulated. Therefore, to recreate the setup no real sensors are needed. 
+The evaluation has been conducted with a total of **3** Raspberry Pis (A, B, C). 
+Each Raspberry Pi is incorporated in a FA 2021 buoy and connected to different sensors: PH, conductivity, and temperature sensors.
+In the complete setup, the microcontroller writes a file containing the types of sensors that are available to the SD card of the Raspberry Pi.
+To make this validation easily reproducible, we recreate the setup without the need for microcontrollers, sensors, and buoy hardware and create the files in the Raspberry Pi Setup section.
 For the evaluation, the following sensor setup was used:
+ - Raspberry Pi A: PH sensor and temperature sensor
+ - Raspberry Pi B: Conductivity sensor and temperature sensor
+ - Raspberry Pi C: PH sensor 
+All Raspberry Pis must be located in a network, connected via Ethernet, as the WiFi module is used for creating access points.
 
- - Pi A: PH sensor, Temp. sensor
- - Pi B: Conductivity sensor, Temperature sensor
- - Pi C: PH sensor.
- 
- The web service that was used for the evaluation/deployment is the [BuoyWebService](https://github.com/Apodini/buoy-web-service), which was forked from the original web service [here](https://github.com/fa21-collaborative-drone-interactions/buoy-web-service) in order to add the deployment options. The core functionality was not touched. The web service is also added as an executable target to this project.
+### Raspberry Pi Setup
 
-### General Setup
+1. Use an Imager such as the [https://www.raspberrypi.com/software/](Raspberry Pi Imager) to flash an [Ubuntu Server 21.10 64-bit](https://ubuntu.com/raspberry-pi/server) on an SD card.
+2. Start the Raspberry Pi with the SD card, connect to the Raspberry Pi using SSH, and change the default password.
+3. SSH into the Raspberry Pi, clone this repository, or copy the script to the Raspberry Pi using `scp` and run the `setup.sh` script (found in the "Scripts" folder) to set up the wireless access point, docker installation, and avahi. The Raspberry Pi restarts after the script is complete. 
+ - Pass the letter of the buoy to the setup script (the default value is `A`), e.g.: `setup.sh B`. 
+ - You can also modify the WiFi password as a second argument: `setup.sh B SuperSecretPassword`.
+4. Check that the wireless access point is running. It corresponds to the letter of the buoy instance, e.g., `BuoyAPA`, and the password is set the same as the access point name if you have not set a separate password.
+5. Create a JSON file containing the available sensors for each of the buoy Raspberry Pis. Change the file at `/buoy/available_sensors.json` to define the connected sensors for that buoy. The JSON file consists of an array of numbers, like: `[0,1]`. The sensors are coded as follows: 
+ 0: Temperature sensor
+ 1: Conductivity sensor
+ 2: PH sensor
 
- 1. Boot all pis using [this image](https://github.com/fa21-collaborative-drone-interactions/BuoyAP). This should pre-configure access point, docker, etc.)
- 2. Download and start avahi by:
-    1. `sudo apt-get install avahi-utils avahi-daemon`
-    2. `edit /etc/avahi/avahi-daemon.conf`
-         `publish-hinfo=yes`
-         `publish-workstation=yes`
-    3. `sudo systemctl enable avahi-daemon.service`
-    4. `sudo systemctl start avahi-daemon.service`
-    Alternatively you can also download and run [this script](https://github.com/Apodini/ApodiniIoTDeploymentProvider/blob/develop/scripts/setup-IoT.sh)
-3. Enable keyless ssh login by running: 
-    `ssh-copy-id username@ipaddress`
-4. (Optional) In my tests I sometimes had the issue that the free space was always around 7-8gb even with bigger sd cards. If you notice something similar, I can recommend [this guide]
-5. For each Pi, edit the json under `/buoy/available_sensors.json` to set the connected sensors for that Pi. The json file consists of an array of numbers, like: `[0,1]`. The sensors are coded as follows: 
-    0: temperature
-    1: conductivity
-    2: ph
-    
-    
-### Run the Provider
+## FA 2021 Deployment Provider
 
-Similiar to the Jass deployment provider ([here](https://github.com/fa21-collaborative-drone-interactions/BuoyDeploymentProviderValidation)), it is recommended to pass a credentials file the provider to fully automate the deployment. The used images are located in public repositories. Thus no credentials need to be provided. The default configuration file `credentials.json` need to referenced when starting the provider, as shown below. 
+The FA 2021 Deployment Provider is based on the [Apodini IoT Deployment Provider](https://github.com/Apodini/ApodiniIoTDeploymentProvider).
+The web service that was used for the evaluation/deployment is the [BuoyWebService](https://github.com/Apodini/buoy-web-service), which was forked from the original web service [here](https://github.com/fa21-collaborative-drone-interactions/buoy-web-service) in order to add the deployment options. 
+The core functionality was not altered.
+The web service is also added as an executable target to this project.
 
-Run the provider, by using `swift run BuoyDeploymentTarget --docker-compose-path docker-compose.yml --config-file credentials.json`. The provider dumps the logs automatically in `/Logs`.  
+### Configure the FA 2021 Deployment Provider
+To allow a non-interactive setup, you can pass a credentials file that will hold the credentials for the docker images and the Raspberry Pi-based IoT gateways.
+The docker images used in the FA 2021 Deployment Providers are public docker images hosted in the GitHub Package Registry. Therefore no docker credentials are needed.
+This repository contains a default credentials file in this repository, `credentials.json`, that can be passed to the provider, as shown in the next section.
 
-### Run the Provider as part of a github action
+### Run the FA 2021 Deployment Provider
 
-For the evaluation of the thesis, the provider was run as part of a github action. Have a look at the web service's repository ([here](https://github.com/Apodini/buoy-web-service)) to get more details on the action. Adding a custom runner should allow to test the deployment as part of the CI. The `setup-IoT-runner.sh` script might be helpful to automate the swift installation. The action references a different repo for the provider. However, it contains the same functionality. There are two github actions related to the deployment. One does a [single deployment](https://github.com/Apodini/buoy-web-service/blob/develop/.github/workflows/deploy.yml) when a new commit is pushed. The other does the [evaluation](https://github.com/Apodini/buoy-web-service/blob/develop/.github/workflows/evaluate_buoy.yml), this means the deployment is conducted 20 times. 10x new deployment (i.e., new download) and 10x recurring deployment (no download). 
+The deployment requires a docker compose file defining the deployable web service.
+Run the provider, by using `swift run BuoyDeploymentTarget --docker-compose-path docker-compose.yml --config-file credentials.json`.
+The provider automatically dumps the logs in the `/Logs` directory.
+
+### Run the Provider as part of a GitHub Action
+
+For the evaluation of the thesis, the provider was run as part of a GitHub Action.
+Have a look at the web service's repository ([buoy-web-service](https://github.com/Apodini/buoy-web-service)) to get more details on the action.
+Adding a custom runner should allow testing the deployment as part of the CI.
+Please note that the runner needs to be able to build and run Swift code.
+The action references a different repo for the provider; however, it contains the same functionality.
+There are two GitHub actions related to the deployment. One does a [single deployment](https://github.com/Apodini/buoy-web-service/blob/develop/.github/workflows/deploy.yml) when a new commit is pushed. 
+The other does the [evaluation](https://github.com/Apodini/buoy-web-service/blob/develop/.github/workflows/evaluate_buoy.yml), this means the deployment is conducted 20 times. 10x new deployment (i.e., new download) and 10x recurring deployment (no download). 
+
+You can test the deployment using the `buoy_simulation.sh` script. You can pass the IP addresses of the RaspberryPis to the script: `buoy_simulation.sh IP1 IP2 IP3`.
+To not be prompted for the password multiple times, run `ssh-copy-id username@ipaddress` with the username (probably ubuntu) and the IP address of your Raspberry Pi on your machine to enable a more straightforward keyless ssh login.
 
 ### Run the Provider to test the redeployment 
 
-In order to test the redeployment, use this shell script `redeploy_simulation.sh PROVIDER_DELAY`. PROVIDER_DELAY specifies how long the deployment provider waits between each network scan. It is recommended to set this something low, e.g. 5 seconds. The scripts iterates over 8 different REQUEST_DELAYS, a request delay specifies how long the script waits after a change occurred to send a request to the web service. Make sure, the machine you run this script on is in the same network as the pis. Ensure that no docker containers are running on the Pis and that the avahi-daemon is running on all pis. Everything else should be handled by the script. The execution times are highly dependent on the specified request delay. 
+In order to test the redeployment, use redeploy simulation shell script `redeploy_simulation.sh PROVIDER_DELAY IP1 IP2 IP3`.
+`PROVIDER_DELAY` specifies how long the deployment provider waits between each network scan.
+You can pass the IP addresses of the RaspberryPis to the script after the `PROVIDER_DELAY`.
 
-## Last Remarks
-I hope this clarifies setup and usage of the provider. If you encounter any problems or run into some issues, feel free to reach out to me.
+To not be prompted for the password multiple times, run `ssh-copy-id username@ipaddress` with the username (probably ubuntu) and the IP address of your Raspberry Pi on your machine to enable a more straightforward keyless ssh login.
+
+It is recommended to set this something low, e.g., 5 seconds. The script iterates over eight different REQUEST_DELAYS.
+A request delay specifies how long the script waits after a change occurs to send a request to the web service.
+The machine running the Deployment Provider needs to be in the same network as the Raspberry Pi buoys when they are in the maintenance/development setting before being deployed to a body of water.
+Ensure that no docker containers are running on the Raspberry Pis and that the avahi-daemon is running on all Raspberry Pis.
+Everything else should be handled by the script.
+The execution times are highly dependent on the specified request delay.
+
+## Contributing
+Contributions to this project are welcome. Please make sure to read the [contribution guidelines](https://github.com/Apodini/.github/blob/main/CONTRIBUTING.md) first.
+
+## License
+This project is licensed under the MIT License. See [License](https://github.com/Apodini/Apodini/blob/reuse/LICENSES/MIT.txt) for more information.
+
+## Code of conduct
+For our code of conduct see [Code of conduct](https://github.com/Apodini/.github/blob/main/CODE_OF_CONDUCT.md).
