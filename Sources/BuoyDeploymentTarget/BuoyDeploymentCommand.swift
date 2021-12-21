@@ -41,8 +41,7 @@ struct BuoyDeployCommand: ParsableCommand {
     @Option(help: "The interval stating how frequent the provider tries to redeploy")
     var redeploymentInterval: Int = 30
     
-    @Flag(help: "If set, the deployment provider listens for changes in the working directory and automatically redeploys them."
-    )
+    @Flag(help: "If set, the deployment provider listens for changes in the working directory and automatically redeploys them.")
     var automaticRedeploy = false
     
     func run() throws {
@@ -69,7 +68,7 @@ struct BuoyDeployCommand: ParsableCommand {
             action: .docker(
                         DockerDiscoveryAction(
                             identifier: ActionIdentifier(actionName),
-                            imageName: "ghcr.io/fa21-collaborative-drone-interactions/buoypostdiscovery:latest",
+                            imageName: "ghcr.io/fa21-collaborative-drone-interactions/buoy-post-discovery-action:latest",
                             fileUrl: URL(fileURLWithPath: deploymentDir).appendingPathComponent(actionName),
                             options: [
                                 .command("\(sensorType) \(actionName)"),

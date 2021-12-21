@@ -10,8 +10,13 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 DEFAULT='\033[0m'
 
-addresses=( "ubuntu@192.168.2.116" "ubuntu@192.168.2.118" "ubuntu@192.168.2.119" )
-ipAddresses=( "192.168.2.116" "192.168.2.118" "192.168.2.119" )
+IP1="${2:-192.168.178.50}"
+IP2="${3:-192.168.178.51}"
+IP3="${4:-192.168.178.52}"
+
+# You can pass the addresses to the script as arguments
+addresses=( "ubuntu@$IP1" "ubuntu@$IP2" "ubuntu@$IP3" )
+ipAddresses=( "$IP1" "$IP2" "$IP3" )
 # The integer values of the sensors
 sensorValues=()
 # The sensors in a string format that can written in the available_sensors.json
@@ -26,8 +31,11 @@ sleepTimes=( "300" "240" "210" "180" "150" "120" "90" "60" "30" )
 failedCalls=0
 totalCalls=51
 
-EXEC_PATH=".build/debug/BuoyDeploymentTarget --config-file config.json --docker-compose-path docker-compose.yml --automatic-redeploy --redeployment-interval "
-
+function reset() {
+    for addresses in "${addresses[@]}"; do
+        ssh $addresses "docker stop buoy-web-service; docker rm buoy-web-service; docker image prune -a -f"
+    done
+}
 
 function call() {
     currentCall=$1:80/v1/data/${sensorNames[$2]}
@@ -58,6 +66,12 @@ echo "${addresses[*]}"
 
 echo "total,failed,time" > "simulation_results_$1.csv"
 
+ssh ${addresses[0]} 'sudo mkdir /buoy'
+ssh ${addresses[1]} 'sudo mkdir /buoy'
+ssh ${addresses[2]} 'sudo mkdir /buoy'
+
+reset
+
 for sleepTime in "${sleepTimes[@]}"; do
     echo "#######################################"
     echo "Evaluating with $sleepTime seconds interval"
@@ -69,9 +83,9 @@ for sleepTime in "${sleepTimes[@]}"; do
     echo "${addresses[0]}"
 
     echo "Copy sensor content to available_sensors.json"
-    ssh ${addresses[0]} 'echo "[0,2]" >| /buoy/available_sensors.json'
-    ssh ${addresses[1]} 'echo "[0,1]" >| /buoy/available_sensors.json'
-    ssh ${addresses[2]} 'echo "[2]" >| /buoy/available_sensors.json'
+    ssh ${addresses[0]} 'echo "[0,2]" | sudo tee /buoy/available_sensors.json'
+    ssh ${addresses[1]} 'echo "[0,1]" | sudo tee /buoy/available_sensors.json'
+    ssh ${addresses[2]} 'echo "[2]" | sudo tee /buoy/available_sensors.json'
     
     echo "Making sure everything is discoverable"
     ssh ${addresses[0]} 'sudo systemctl start avahi-daemon.service'
@@ -79,7 +93,7 @@ for sleepTime in "${sleepTimes[@]}"; do
     ssh ${addresses[2]} 'sudo systemctl start avahi-daemon.service'
   
     echo "Starting the Deployment Provider"
-    tmux new-session -d -s sim ".build/debug/BuoyDeploymentTarget --config-file config.json --docker-compose-path docker-compose.yml --automatic-redeploy --redeployment-interval $1"
+    tmux new-session -d -s sim "swift run BuoyDeploymentTarget --config-file credentials.json --docker-compose-path docker-compose.yml --automatic-redeploy --redeployment-interval $1"
 
     echo "Waiting for initial deployment..."
     sleep 340
@@ -119,9 +133,9 @@ for sleepTime in "${sleepTimes[@]}"; do
     evaluate "Testing joining IoT gateway"
 
     echo "Testing joining and leaving IoT devices.."
-    ssh ${addresses[0]} 'echo "[1]" >| /buoy/available_sensors.json'
-    ssh ${addresses[1]} 'echo "[2]" >| /buoy/available_sensors.json'
-    ssh ${addresses[2]} 'echo "[]" >| /buoy/available_sensors.json'
+    ssh ${addresses[0]} 'echo "[1]" | sudo tee /buoy/available_sensors.json'
+    ssh ${addresses[1]} 'echo "[2]" | sudo tee /buoy/available_sensors.json'
+    ssh ${addresses[2]} 'echo "[]" | sudo tee /buoy/available_sensors.json'
 
     sleep $sleepTime
     call ${ipAddresses[0]} 0 false
@@ -138,7 +152,7 @@ for sleepTime in "${sleepTimes[@]}"; do
 
     evaluate "Testing joining and leaving IoT devices - case 1"
 
-    ssh ${addresses[0]} 'echo "[0]" >| /buoy/available_sensors.json'
+    ssh ${addresses[0]} 'echo "[0]" | sudo tee /buoy/available_sensors.json'
     sleep $sleepTime
     call ${ipAddresses[0]} 0 true
     call ${ipAddresses[0]} 1 false
@@ -146,7 +160,7 @@ for sleepTime in "${sleepTimes[@]}"; do
 
     evaluate "Testing joining and leaving IoT devices - case 2"
 
-    ssh ${addresses[1]} 'echo "[1,2]" >| /buoy/available_sensors.json'
+    ssh ${addresses[1]} 'echo "[1,2]" | sudo tee /buoy/available_sensors.json'
     sleep $sleepTime
     call ${ipAddresses[1]} 0 false
     call ${ipAddresses[1]} 1 true
@@ -154,7 +168,7 @@ for sleepTime in "${sleepTimes[@]}"; do
 
     evaluate "Testing joining and leaving IoT devices - case 3"
 
-    ssh ${addresses[2]} 'echo "[0,1,2]" >| /buoy/available_sensors.json'
+    ssh ${addresses[2]} 'echo "[0,1,2]" | sudo tee /buoy/available_sensors.json'
     sleep $sleepTime
     call ${ipAddresses[2]} 0 true
     call ${ipAddresses[2]} 1 true
@@ -162,7 +176,7 @@ for sleepTime in "${sleepTimes[@]}"; do
 
     evaluate "Testing joining and leaving IoT devices - case 4"
 
-    ssh ${addresses[0]} 'echo "[0,1,2]" >| /buoy/available_sensors.json'
+    ssh ${addresses[0]} 'echo "[0,1,2]" | sudo tee /buoy/available_sensors.json'
     sleep $sleepTime
     call ${ipAddresses[0]} 0 true
     call ${ipAddresses[0]} 1 true
@@ -170,7 +184,7 @@ for sleepTime in "${sleepTimes[@]}"; do
 
     evaluate "Testing joining and leaving IoT devices - case 5"
 
-    ssh ${addresses[0]} 'echo "[]" >| /buoy/available_sensors.json'
+    ssh ${addresses[0]} 'echo "[]" | sudo tee /buoy/available_sensors.json'
     sleep $sleepTime
     call ${ipAddresses[0]} 0 false
     call ${ipAddresses[0]} 1 false
@@ -178,7 +192,7 @@ for sleepTime in "${sleepTimes[@]}"; do
 
     evaluate "Testing joining and leaving IoT devices - case 6"
 
-    ssh ${addresses[0]} 'echo "[2]" >| /buoy/available_sensors.json'
+    ssh ${addresses[0]} 'echo "[2]" | sudo tee /buoy/available_sensors.json'
     sleep $sleepTime
     call ${ipAddresses[0]} 0 false
     call ${ipAddresses[0]} 1 false
@@ -186,7 +200,7 @@ for sleepTime in "${sleepTimes[@]}"; do
 
     evaluate "Testing joining and leaving IoT devices - case 7"
 
-    ssh ${addresses[2]} 'echo "[0,1]" >| /buoy/available_sensors.json'
+    ssh ${addresses[2]} 'echo "[0,1]" | sudo tee /buoy/available_sensors.json'
     sleep $sleepTime
     call ${ipAddresses[2]} 0 true
     call ${ipAddresses[2]} 1 true
@@ -204,7 +218,7 @@ for sleepTime in "${sleepTimes[@]}"; do
     evaluate "Testing leaving IoT gateway"
 
     echo "Turn device ${ipAddresses[1]} on again. Expect endpoints to be available again."
-    ssh ${addresses[1]} 'echo "[0,2]" >| /buoy/available_sensors.json'
+    ssh ${addresses[1]} 'echo "[0,2]" | sudo tee /buoy/available_sensors.json'
     ssh ${addresses[1]} 'sudo systemctl start avahi-daemon.service'
     sleep $sleepTime
     call ${ipAddresses[1]} 0 true
@@ -219,3 +233,4 @@ for sleepTime in "${sleepTimes[@]}"; do
     
 done
 
+reset
