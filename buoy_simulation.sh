@@ -64,20 +64,20 @@ function evaluate() {
 
 echo "Testing normal deployment. Downloading images only on first run"
 
-#for ((i=1;i<=10;i++)); do
+for ((i=1;i<=10;i++)); do
     reset
     swift run BuoyDeploymentTarget --config-file credentials.json --docker-compose-path docker-compose.yml
     evaluate
-#done
+done
 
 sleep 10
 echo "Testing without docker reset. Assuming needed images are already downloaded"
 
-#for ((i=1;i<=10;i++)); do
+for ((i=1;i<=10;i++)); do
     stop
     swift run BuoyDeploymentTarget --config-file credentials.json --docker-compose-path docker-compose.yml
     evaluate
-#done
+done
 
 reset
 
