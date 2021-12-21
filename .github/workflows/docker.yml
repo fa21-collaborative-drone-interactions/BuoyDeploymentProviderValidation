@@ -43,8 +43,8 @@ jobs:
       - name: Build and push Buoy Post Discovery Action docker image
         uses: docker/build-push-action@v2
         with:
-          context: BuoyPostDiscoveryAction
-          file: Dockerfile
+          context: ./BuoyPostDiscoveryAction
+          file: ./BuoyPostDiscoveryAction/Dockerfile
           push: true
           tags: ghcr.io/fa21-collaborative-drone-interactions/buoy-post-discovery-action:latest-arm64,ghcr.io/fa21-collaborative-drone-interactions/buoy-post-discovery-action:${{ steps.latesttag.outputs.tag }}-arm64
   dockerAMD64:
@@ -76,8 +76,8 @@ jobs:
       - name: Build and push Buoy Post Discovery Action docker image
         uses: docker/build-push-action@v2
         with:
-          context: BuoyPostDiscoveryAction
-          file: Dockerfile
+          context: ./BuoyPostDiscoveryAction
+          file: ./BuoyPostDiscoveryAction/Dockerfile
           push: true
           tags: ghcr.io/fa21-collaborative-drone-interactions/buoy-post-discovery-action:latest-amd64,ghcr.io/fa21-collaborative-drone-interactions/buoy-post-discovery-action:${{ steps.latesttag.outputs.tag }}-amd64
   dockermanifest:
