@@ -35,6 +35,7 @@ All Raspberry Pis must be located in a network, connected via Ethernet, as the W
  0: Temperature sensor
  1: Conductivity sensor
  2: PH sensor
+6. (Optional) If you use an `docker-compose.yml` or a Swift package as the input type of the web service, make sure that a password-less ssh connection can be established between the raspberry pis and the provider machine, e.g. by using `copy-ssh-id`. This is not required if the web service is provided as a Docker image. 
 
 ## FA 2021 Deployment Provider
 
