@@ -31,7 +31,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Apodini/Apodini.git", .upToNextMinor(from: "0.6.1")),
-        .package(url: "https://github.com/Apodini/ApodiniIoTDeploymentProvider", .upToNextMinor(from: "0.1.0"))
+        .package(url: "https://github.com/Apodini/ApodiniIoTDeploymentProvider", .upToNextMinor(from: "0.1.3"))
     ],
     targets: [
         .target(
